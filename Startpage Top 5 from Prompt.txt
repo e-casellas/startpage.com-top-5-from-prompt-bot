@@ -1,0 +1,70 @@
+1	Loop While $vRepeatTask$ Equal To (=) "Yes" 
+2	     Prompt Message: "Please write anything below and I'll return the top 5 search results from Startpage.com" in "Don't Write In Any Window" Assign value to Variable: $vSearchString$
+3	     String Operation: Trim "$vSearchString$" and assign output to $vSearchString$
+4	     If $vSearchString$ Equal To (=) "" Then  
+5	          Message Box: "Nothing to search for then, goodbye!"
+6	          Stop The Current Task
+7	     End If
+8	     Open "https://www.startpage.com/"
+9	     Wait for Window to Open ("*Startpage*") (Wait up to 15 seconds - For Window to Open)
+10	     Delay: (2 sec)
+11	     Set text '$vSearchString$' into query in the webpage 'Startpage.com - The world's most private search engine' 
+12	     Click on 'Search' Command Button in the webpage 'Startpage.com - The world's most private search engine' 
+13	     Loop While $vCount$ Less than or Equal To(<=) "5" 
+14	          Get text from 1/1 (2018) - IMDb into "$Prompt-Assignment$" in the webpage 'Search results - Startpage.com' 
+15	          Variable Operation: $Prompt-Assignment$ To $vSearchResults($vCount$, 1)$
+16	          Get URL from 1/1 (2018) - IMDb into $Prompt-Assignment$ in the webpage 'Search results - Startpage.com' 
+17	          If $Prompt-Assignment$ Includes "www.startpage.com" Then  
+18	               Variable Operation: $vResultIndex$ + 2 To $vResultIndex$
+19	               Continue
+20	          End If
+21	          Variable Operation: $Prompt-Assignment$ To $vSearchResults($vCount$, 2)$
+22	          Variable Operation: $vCount$ + 1 To $vCount$
+23	          Variable Operation: $vResultIndex$ + 2 To $vResultIndex$
+24	     End Loop
+25	     Close Browser
+26	     Message Box: "Here are your top 5 results for '$vSearchString$':1. $vSearchResults(1,1)$ ($vSearchResults(1,2)$)2. $vSearchResults(2,1)$ ($vSearchResults(2,2)$)3. $vSearchResults(3,1)$ ($vSearchResults(3,2)$)4. $vSearchResults(4,1)$ ($vSearchResults(4,2)$)5. $vSearchResults(5,1)$ ($vSearchResults(5,2)$)"
+27	     Prompt For Yes/No: "Do you want to save these results?" for File Assign to variable "$Prompt-Assignment$"
+28	     If $Prompt-Assignment$ Equal To (=) "Yes" Then  
+29	          If File Does Not Exist ("C:\Users\SLip023\Desktop\AA Files\Startpage Top 5\Search Results.xlsx")  Then  
+30	               Message Box: "Unable to locate the file 'C:\Users\SLip023\Desktop\AA Files\Startpage Top 5\Search Results.xlsx'. Unable to save search results."
+31	          Else
+32	               Excel: Open Spreadsheet "C:\Users\SLip023\Desktop\AA Files\Startpage Top 5\Search Results.xlsx". ActiveSheet: "Default". Session: Default
+33	               Excel: Go to cell "A1". Session: Default
+34	               Excel: Go to end of the column of the active cell. Session: Default
+35	               Excel: Get value of Active Cell and assign to variable "$Prompt-Assignment$" Session: Default
+36	               If $Prompt-Assignment$ Not Equal To (<>) "" Then  
+37	                    Excel: Go to one cell below the active cell. Session: Default
+38	                    Excel: Go to one cell below the active cell. Session: Default
+39	               End If
+40	               Excel: Set value of Active Cell with "Search String:". Session: Default
+41	               Excel: Go to one cell right of active cell. Session: Default
+42	               Excel: Set value of Active Cell with "$vSearchString$". Session: Default
+43	               Excel: Go to one cell right of active cell. Session: Default
+44	               Excel: Set value of Active Cell with "Timestamp: $Date$". Session: Default
+45	               Excel: Go to one cell below the active cell. Session: Default
+46	               Excel: Go to one cell left from active cell. Session: Default
+47	               Excel: Set value of Active Cell with "URL". Session: Default
+48	               Excel: Go to one cell left from active cell. Session: Default
+49	               Excel: Set value of Active Cell with "TITLE". Session: Default
+50	               Excel: Go to one cell below the active cell. Session: Default
+51	               Start Loop "5" Times 
+52	                    Excel: Set value of Active Cell with "$vSearchResults($Counter$,1)$". Session: Default
+53	                    Excel: Go to one cell right of active cell. Session: Default
+54	                    Excel: Set value of Active Cell with "$vSearchResults($Counter$,2)$". Session: Default
+55	                    Excel: Go to one cell below the active cell. Session: Default
+56	                    Excel: Go to beginning of the row of the active cell. Session: Default
+57	               End Loop
+58	          End If
+59	     End If
+60	     Prompt For Yes/No: "Do you want to make another search?" for File Assign to variable "$vRepeatTask$"
+61	     If $vRepeatTask$ Equal To (=) "No" Then  
+62	          Variable Operation: No To $vRepeatTask$
+63	     Else
+64	          Variable Operation: "" To $Prompt-Assignment$
+65	          Variable Operation: 1 To $vCount$
+66	          Variable Operation: 13 To $vResultIndex$
+67	          Variable Operation: Reinitialize $vSearchResults$
+68	          Variable Operation: "" To $vSearchString$
+69	     End If
+70	End Loop
